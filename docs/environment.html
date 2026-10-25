@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Environment, camera and entities · Blocmpact</title>
+<meta name="description" content="What surrounds the effect: fog, sky, celestial bodies, clouds and weather; shake, FOV and cutscenes; entity outlines and poses.">
+<meta property="og:title" content="Environment, camera and entities · Blocmpact">
+<meta property="og:description" content="What surrounds the effect: fog, sky, celestial bodies, clouds and weather; shake, FOV and cutscenes; entity outlines and poses.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<script>try { var t = localStorage.getItem("blocmpact-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+<button class="icon-btn menu-btn" id="menu" type="button" aria-label="Menu" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Blocmpact</span> <small>docs</small></a>
+<div class="search" role="search">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+<input id="q" type="search" placeholder="Search the guide" aria-label="Search the guide" autocomplete="off" aria-controls="results">
+<kbd>/</kbd>
+<ul class="results" id="results" hidden></ul>
+</div>
+<button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+<a class="icon-btn gh-link" href="https://github.com/julionxn/blocmpact" aria-label="Source on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg></a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Guide">
+<p>Guide</p>
+<ol>
+<li><a href="index.html">Home<span>What it is, installation, concepts</span></a></li>
+<li><a href="getting-started.html">Getting started<span>Your first effect; launching and stopping</span></a></li>
+<li><a href="world.html">Particles, HUD and geometry<span>Levels 0, 1 and 2</span></a></li>
+<li><a href="screen.html">Screen passes<span>Level 3: shaders and compositor</span></a></li>
+<li><a href="environment.html" aria-current="page">Environment, camera and entities<span>Fog, sky, cutscenes, poses</span></a></li>
+<li><a href="data.html">Data-driven effects<span>JSON, format and expressions</span></a></li>
+<li><a href="tools.html">Settings and tools<span>Options, commands, workflow, performance</span></a></li>
+<li><a href="cookbook.html">Cookbook<span>Recipes and full examples</span></a></li>
+<li><a href="troubleshooting.html">Troubleshooting and limits<span>Diagnosis and what it does not do</span></a></li>
+</ol>
+<div class="side-links">
+<p>Links</p>
+<ol>
+<li><a href="https://modrinth.com/mod/blocmpact">Download on Modrinth</a></li>
+<li><a href="https://github.com/julionxn/blocmpact">Source on GitHub</a></li>
+<li><a href="https://github.com/julionxn/blocmpact/blob/main/CHANGELOG.md">Changelog</a></li>
+<li><a href="https://github.com/julionxn/blocmpact/issues">Report an issue</a></li>
+</ol>
+</div>
+</nav>
+<main class="content" id="main">
+<h1>Environment, camera and entities</h1>
+<p class="lead">What surrounds the effect: fog, sky, celestial bodies, clouds and weather; shake, FOV and cutscenes; entity outlines and poses.</p>
+<h2 id="11-environment-camera-and-entities">11. Environment, camera and entities</h2>
+<h3 id="environment-environmentfx">Environment (<code>EnvironmentFx</code>)</h3>
+<p>It changes what Minecraft itself draws, so it works with any backend. Each value carries a weight from 0 to 1 that mixes vanilla with yours; several effects are applied in order.</p>
+<pre><code class="language-java">@Override public void environment(Frame f, EnvironmentFx env) {
+    float k = FxMath.window(time(f.partial()), 0, 40, 160, 200);
+    env.fogColor(0x302040, k).fogDistance(0, 64, k)          // atmospheric fog (biome/dimension)
+       .skyColor(0x101020, k).starBrightness(1f, k)          // night in broad daylight
+       .skyLightFactor(0.3f, k).ambientLight(0x202040, k)    // the world really gets darker
+       .rain(1f, k).thunder(0.6f, k)                         // visual weather (this client only)
+       .cloudHole(origin().x, origin().z, 60, 0.3f, seed());
+}
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Methods</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Atmospheric fog</td>
+<td><code>fogColor</code>, <code>fogDistance</code>, <code>skyFogEnd</code>, <code>cloudFogEnd</code>, <code>waterFogColor</code>, <code>waterFogDistance</code></td>
+</tr>
+<tr>
+<td>Final fog (water, lava, blindness… included)</td>
+<td><code>fog(start, end, weight)</code>, <code>fogFinalColor</code>, <code>fogSkyEnd</code>, <code>fogCloudEnd</code></td>
+</tr>
+<tr>
+<td>Sky</td>
+<td><code>skyColor</code>, <code>sunriseColor</code>, <code>sunAngle</code>, <code>moonAngle</code>, <code>starAngle</code>, <code>starBrightness</code></td>
+</tr>
+<tr>
+<td>Clouds</td>
+<td><code>cloudColor</code> (alpha 0 hides them), <code>cloudHeight</code>, <code>cloudHole(x, z, radius[, irregular, seed])</code></td>
+</tr>
+<tr>
+<td>World light</td>
+<td><code>skyLightColor</code>, <code>skyLightFactor</code>, <code>ambientLight</code>, <code>blockLightTint</code>, <code>nightVisionColor</code></td>
+</tr>
+<tr>
+<td>Weather</td>
+<td><code>rain</code>, <code>thunder</code></td>
+</tr>
+<tr>
+<td>Any attribute</td>
+<td><code>set(EnvironmentAttributes.X, value, weight)</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="camera-camerafx">Camera (<code>CameraFx</code>)</h3>
+<pre><code class="language-java">@Override public void camera(Frame f, CameraFx cam) {
+    float since = since(IMPACT, f.partial());
+    if (since &gt;= 0) cam.shake(3f * (float) Math.exp(-4 * since));   // degrees
+    cam.roll(2f * FxMath.wave(time(f.partial()) / 20f, 0.5f) - 1f).fovScale(1f - 0.1f * charge);
+}
+</code></pre>
+<p><code>shake</code> (maximum), <code>shakeFrequency</code>, <code>roll</code> (add), <code>rotate(yaw, pitch)</code> (add), <code>fovScale</code> (multiply), <code>fov</code> (adds degrees), <code>offset(Vec3)</code> (add). It moves the real camera: it works without OpenGL and respects the player's shake setting.</p>
+<h3 id="cutscenes-cinematics-cutscene-shot">Cutscenes (<code>Cinematics</code>, <code>Cutscene</code>, <code>Shot</code>)</h3>
+<pre><code class="language-java">@Override protected void onStart(TickContext ctx) {
+    if (!isCaster()) return;                                   // decide who sees it
+    Cinematics.play(Cutscene.builder()
+        .time(this::time)                                      // follows the effect's clock (slow motion included)
+        .focus(origin())
+        .letterbox(0.12f, 0xFF000000)
+        .shot(Shot.cut(0, 60, (c, k) -&gt; CameraPose.lookAt(
+            ShotContext.orbit(c.focus().add(0, 8, -16), c.focus(), ShotContext.l(k, 0, 120)), c.focus().add(0, 2, 0), 70f, 0)))
+        .shot(Shot.sweep(60, 100, 10, (c, k) -&gt; CameraPose.lookAt(c.focus().add(6, 1, 6), c.focus().add(0, 4, 0), 60f, 0)))
+        .build());
+}
+</code></pre>
+<ul>
+<li>A shot is a function <code>(context, k) → CameraPose</code> with <code>k</code> already eased (<em>dolly</em>). <code>cut</code> starts abruptly; <code>sweep</code> blends from the previous pose.</li>
+<li>Write shots relative to the focus (<code>focus</code>, <code>home</code>, <code>side</code>, <code>orbit</code>, <code>playerFeet</code>), never in absolute coordinates.</li>
+<li>Defaults: 5-tick fade in and 12-tick fade out, vanilla HUD and hand hidden, block collision, skippable (<code>/blocmpactc skip</code> or <code>Cinematics.skip()</code>), priority 0.</li>
+<li>The player is drawn once the camera leaves their eyes, as in third person.</li>
+<li>The cutscene camera does not inherit the walking sway (<em>view bobbing</em>): it fades out with the cutscene's weight. <code>CameraFx</code> shake and roll still apply.</li>
+</ul>
+<h3 id="entities-entityfx">Entities (<code>EntityFx</code>)</h3>
+<pre><code class="language-java">@Override public void entities(Frame f, EntityFx e) {
+    Entity caster = anchorEntity(Minecraft.getInstance().level);
+    if (caster == null) return;
+    e.outline(caster, 0x66CCFF);                                                    // outline visible through walls
+    e.pose(caster, EntityFx.RIGHT_ARM, PartPose.rotation(-2.6f, 0, 0).withWeight(k));   // arm raised to the sky
+}
+</code></pre>
+<p>Poses work with any model: parts are named as in its model tree (<code>head</code>, <code>body</code>, <code>right_arm</code>, <code>left_arm</code>, <code>right_leg</code>, <code>left_leg</code>, <code>hat</code> on humanoids; <code>tail</code>, etc. on others). <code>PartPose</code> supports rotation, offset (in model pixels), scale, visibility, <code>SET</code> or <code>ADD</code> mode and weight. Armor follows the parts.</p>
+<nav class="pager" aria-label="Pages"><a class="prev" href="screen.html"><small>Previous</small>Screen passes</a><a class="next" href="data.html"><small>Next</small>Data-driven effects</a></nav>
+<footer class="foot">Blocmpact · <a href="https://github.com/julionxn/blocmpact/blob/main/LICENSE">MIT license</a> · <a href="https://github.com/julionxn/blocmpact">GitHub</a> · <a href="https://modrinth.com/mod/blocmpact">Modrinth</a></footer>
+</main>
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/glsl.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/groovy.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

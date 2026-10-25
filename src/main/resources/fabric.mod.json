@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "blocmpact",
+	"version": "${version}",
+	"name": "Blocmpact",
+	"description": "Style-neutral visual effects API: timelines, particles, sound, HUD, world geometry, full-screen post-processing, environment, camera, cinematics and data-driven effects.",
+	"authors": [
+		"julionxn"
+	],
+	"contact": {
+		"homepage": "https://julionxn.github.io/blocmpact/",
+		"sources": "https://github.com/julionxn/blocmpact",
+		"issues": "https://github.com/julionxn/blocmpact/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/blocmpact/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"me.julionxn.blocmpact.Blocmpact"
+		],
+		"client": [
+			"me.julionxn.blocmpact.client.BlocmpactClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "blocmpact.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": ">=0.162.0"
+	}
+}

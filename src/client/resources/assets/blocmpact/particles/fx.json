@@ -1,0 +1,12 @@
+{
+  "textures": [
+    "blocmpact:soft",
+    "blocmpact:dot",
+    "blocmpact:ring",
+    "blocmpact:square",
+    "blocmpact:streak",
+    "blocmpact:cross",
+    "blocmpact:puff",
+    "blocmpact:thin_ring"
+  ]
+}

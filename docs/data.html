@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data-driven effects · Blocmpact</title>
+<meta name="description" content="Complete effects in JSON inside a resource pack, with expressions in any number and reloading with F3+T.">
+<meta property="og:title" content="Data-driven effects · Blocmpact">
+<meta property="og:description" content="Complete effects in JSON inside a resource pack, with expressions in any number and reloading with F3+T.">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+<script>try { var t = localStorage.getItem("blocmpact-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+<button class="icon-btn menu-btn" id="menu" type="button" aria-label="Menu" aria-controls="sidebar" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+<a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Blocmpact</span> <small>docs</small></a>
+<div class="search" role="search">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+<input id="q" type="search" placeholder="Search the guide" aria-label="Search the guide" autocomplete="off" aria-controls="results">
+<kbd>/</kbd>
+<ul class="results" id="results" hidden></ul>
+</div>
+<button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+<a class="icon-btn gh-link" href="https://github.com/julionxn/blocmpact" aria-label="Source on GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg></a>
+</header>
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Guide">
+<p>Guide</p>
+<ol>
+<li><a href="index.html">Home<span>What it is, installation, concepts</span></a></li>
+<li><a href="getting-started.html">Getting started<span>Your first effect; launching and stopping</span></a></li>
+<li><a href="world.html">Particles, HUD and geometry<span>Levels 0, 1 and 2</span></a></li>
+<li><a href="screen.html">Screen passes<span>Level 3: shaders and compositor</span></a></li>
+<li><a href="environment.html">Environment, camera and entities<span>Fog, sky, cutscenes, poses</span></a></li>
+<li><a href="data.html" aria-current="page">Data-driven effects<span>JSON, format and expressions</span></a></li>
+<li><a href="tools.html">Settings and tools<span>Options, commands, workflow, performance</span></a></li>
+<li><a href="cookbook.html">Cookbook<span>Recipes and full examples</span></a></li>
+<li><a href="troubleshooting.html">Troubleshooting and limits<span>Diagnosis and what it does not do</span></a></li>
+</ol>
+<div class="side-links">
+<p>Links</p>
+<ol>
+<li><a href="https://modrinth.com/mod/blocmpact">Download on Modrinth</a></li>
+<li><a href="https://github.com/julionxn/blocmpact">Source on GitHub</a></li>
+<li><a href="https://github.com/julionxn/blocmpact/blob/main/CHANGELOG.md">Changelog</a></li>
+<li><a href="https://github.com/julionxn/blocmpact/issues">Report an issue</a></li>
+</ol>
+</div>
+</nav>
+<main class="content" id="main">
+<h1>Data-driven effects</h1>
+<p class="lead">Complete effects in JSON inside a resource pack, with expressions in any number and reloading with F3+T.</p>
+<h2 id="12-data-driven-effects">12. Data-driven effects</h2>
+<p>A file <code>assets/&lt;ns&gt;/blocmpact/effects/&lt;path&gt;.json</code> defines the type <code>&lt;ns&gt;:&lt;path&gt;</code>. If a Java effect has the same id, the Java one wins. F3+T reloads everything and errors reach the chat with their path (<code>mymod:x.timeline[2].do[0].particles</code>).</p>
+<p>The same format works outside resource packs (generated in code, read from a config file, received over the network) with <code>ClientEffects.fromJson(id, json)</code>, which validates it right away and throws <code>IllegalArgumentException</code> with the JSON path of the error. F3+T does not reload that definition, but it does reload the shaders and textures it names:</p>
+<pre><code class="language-java">// like any other type
+ClientEffects.register(id, ClientEffects.fromJson(id, json));
+// once, without registering
+ClientEffects.play(EffectSpawn.local(id, pos, params), ClientEffects.fromJson(id, json));
+</code></pre>
+<p>Any number can be an <strong>expression</strong> (<a href="data.html#14-expressions">section 14</a>). <strong>Positions</strong> are <code>"origin"</code>, <code>"camera"</code>, <code>[dx, dy, dz]</code> (offset from the origin), <code>{"abs": [x, y, z]}</code>, <code>{"param": "name"}</code> or <code>{"offset": [...], "from": ...}</code>. <strong>Colors</strong> are <code>"#RRGGBB"</code>, <code>"#AARRGGBB"</code>, the name of a color parameter, <code>[r, g, b(, a)]</code> with 0–1 expressions, or a number.</p><h2 id="13-json-format-reference">13. JSON format reference</h2>
+<h3 id="root">Root</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>duration</code></td>
+<td>Timeline ticks (expression evaluated at start; -1 or absent = until stopped)</td>
+</tr>
+<tr>
+<td><code>range</code></td>
+<td>Radius within which it is drawn (512)</td>
+</tr>
+<tr>
+<td><code>defaults</code></td>
+<td>Default parameters (launch parameters override them)</td>
+</tr>
+<tr>
+<td><code>vars</code></td>
+<td>Derived variables, in order; recomputed on every evaluation</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>Variables that persist between ticks (initial values); changed with the <code>set</code> action</td>
+</tr>
+<tr>
+<td><code>silence</code></td>
+<td>Condition that silences the world</td>
+</tr>
+<tr>
+<td><code>stop</code></td>
+<td><code>{"outro": ticks, "do": [actions]}</code>: what to do when asked to stop</td>
+</tr>
+<tr>
+<td><code>timeline</code></td>
+<td>List of entries that run actions</td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td><code>{"name": [actions]}</code>; the event data arrives as <code>event_&lt;key&gt;</code></td>
+</tr>
+<tr>
+<td><code>passes</code>, <code>screen</code>, <code>environment</code>, <code>camera</code>, <code>entity</code>, <code>hud</code>, <code>geometry</code></td>
+<td>The layers (below)</td>
+</tr>
+<tr>
+<td><code>hud_height</code></td>
+<td>Height of the HUD canvas (720)</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="timeline">Timeline</h3>
+<pre><code class="language-json">{ &quot;at&quot;: 20, &quot;do&quot;: [ ... ] }                              // at tick 20
+{ &quot;from&quot;: 0, &quot;to&quot;: 40, &quot;every&quot;: 2, &quot;do&quot;: [ ... ] }      // every 2 ticks between 0 and 40
+{ &quot;when&quot;: &quot;t &gt; 60 &amp;&amp; rand(tick) &lt; 0.3&quot;, &quot;do&quot;: [ ... ] }  // whenever it holds
+</code></pre>
+<p>Actions (all accept <code>"when"</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>particles</code></td>
+<td><code>particle</code> (id or object with options; <code>"$param"</code> is replaced by the parameter), <code>shape</code>, <code>count</code>, <code>velocity</code>, <code>lod</code> (full-detail distance), <code>at</code></td>
+</tr>
+<tr>
+<td><code>sound</code></td>
+<td><code>id</code>, <code>volume</code>, <code>pitch</code>, <code>mode</code> (<code>at</code>, <code>head</code>, <code>edge</code>, <code>speed_of_sound</code>), <code>at</code>, <code>radius</code></td>
+</tr>
+<tr>
+<td><code>spawn</code></td>
+<td><code>type</code>, <code>at</code>, <code>params</code> (expressions or <code>"#color"</code>), <code>inherit_params</code></td>
+</tr>
+<tr>
+<td><code>set</code></td>
+<td><code>{"variable": expression}</code> on <code>state</code></td>
+</tr>
+<tr>
+<td><code>finish</code></td>
+<td><code>true</code>: ends the effect</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>shape</code>: <code>type</code> and its fields, plus <code>jitter</code> and <code>ground</code> (height above the terrain) for any of them:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>type</code></th>
+<th>Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>point</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>ring</code>, <code>disc</code></td>
+<td><code>radius</code>, <code>phase</code> (<code>ring</code> only), <code>normal</code></td>
+</tr>
+<tr>
+<td><code>sphere</code>, <code>dome</code>, <code>ball</code></td>
+<td><code>radius</code></td>
+</tr>
+<tr>
+<td><code>helix</code></td>
+<td><code>radius</code>, <code>height</code>, <code>turns</code>, <code>phase</code>, <code>axis</code></td>
+</tr>
+<tr>
+<td><code>line</code></td>
+<td><code>to</code> (position)</td>
+</tr>
+<tr>
+<td><code>arc</code></td>
+<td><code>yaw</code>, <code>radius</code>, <code>from</code> and <code>to</code> (degrees)</td>
+</tr>
+<tr>
+<td><code>cone</code></td>
+<td><code>direction</code>, <code>angle</code></td>
+</tr>
+<tr>
+<td><code>box</code></td>
+<td><code>size</code> (<code>[x, y, z]</code>)</td>
+</tr>
+<tr>
+<td><code>spiral</code></td>
+<td><code>inner</code>, <code>radius</code>, <code>turns</code>, <code>phase</code>, <code>normal</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>velocity</code>: <code>type</code> (<code>none</code>, <code>along</code> with <code>speed</code> and <code>max</code>, <code>fixed</code> with <code>vector</code>, <code>random</code>, <code>towards</code> with <code>target</code> and <code>ticks</code>, <code>away</code>, <code>swirl</code> with <code>axis</code>) and <code>plus</code> (another velocity added to it).</p>
+<p>Configurable particle in JSON: <code>{"type": "blocmpact:fx", "color", "color_end", "size", "size_end", "lifetime", "jitter", "gravity", "drag", "spin", "blend": "translucent|additive|opaque", "emissive", "collide", "facing": "camera|vertical", "sprite": "index|random|animate", "sprite_index", "curve": "linear|ease_in|ease_out|smooth", "fade_in"}</code>.</p>
+<h3 id="passes">Passes</h3>
+<pre><code class="language-json">&quot;passes&quot;: [ {
+  &quot;program&quot;: &quot;mymod:wave&quot;, &quot;when&quot;: &quot;t &gt; 20&quot;, &quot;stage&quot;: &quot;scene&quot;, &quot;output&quot;: null, &quot;persistent&quot;: false,
+  &quot;scale&quot;: 1, &quot;hdr&quot;: true, &quot;defines&quot;: { &quot;QUALITY&quot;: 2 },
+  &quot;uniforms&quot;: {
+    &quot;Target&quot;: { &quot;world&quot;: &quot;origin&quot; },
+    &quot;P0&quot;: [&quot;radius&quot;, &quot;max(0, (t - 20) / 20)&quot;, &quot;seed&quot;, &quot;k&quot;],
+    &quot;P1&quot;: { &quot;color&quot;: &quot;color&quot; },
+    &quot;Focus&quot;: { &quot;screen&quot;: [0, 2, 0] },
+    &quot;Noise&quot;: { &quot;texture&quot;: &quot;mymod:textures/fx/noise.png&quot;, &quot;linear&quot;: true, &quot;repeat&quot;: true },
+    &quot;Mask&quot;: { &quot;target&quot;: &quot;mymod_mask&quot; },
+    &quot;Past&quot;: { &quot;history&quot;: 0.5 },
+    &quot;Pts&quot;: { &quot;points&quot;: [ { &quot;at&quot;: [0, 0, 0], &quot;w&quot;: &quot;t&quot; }, { &quot;at&quot;: [5, 0, 0] } ] },
+    &quot;Brightness&quot;: &quot;0.5 + 0.5 * sin(t)&quot;
+  }
+} ]
+</code></pre>
+<h3 id="screen">Screen</h3>
+<p>Scalars (number, expression or <code>{"value", "when"}</code> object): <code>shake</code>, <code>aberration</code>, <code>threshold_bloom</code>, <code>adaptation</code>, <code>exposure</code>, <code>saturation</code>, <code>gamma</code>, <code>hue_shift</code>, <code>grain</code>, <code>hold_fps</code>.
+Objects: <code>contrast {value, pivot}</code>, <code>bloom {strength, radius}</code>, <code>keep_color {amount, threshold}</code>, <code>vignette {amount, color, inner, outer}</code>, <code>flash {amount, color}</code>, <code>fade {amount, color}</code>, <code>zoom_blur {amount, at}</code>, <code>zoom {scale, at}</code>, <code>impact {mode, paper, ink, highlight, bias, edges, cell, glitch, spin, invert, time, at, when}</code>, <code>impact_cycle {start, duration, at, frames: [ {mode, ...} ]}</code>. Plain colors: <code>tint</code>, <code>lift</code>, <code>gray_tint</code>.</p>
+<h3 id="environment">Environment</h3>
+<p>All accept <code>weight</code> and <code>when</code>. With <code>color</code>: <code>fog_color</code>, <code>sky_color</code>, <code>cloud_color</code>, <code>sunrise_color</code>, <code>sky_light_color</code>, <code>ambient_light</code>, <code>block_light_tint</code>, <code>night_vision_color</code>, <code>water_fog_color</code>, <code>fog_final_color</code>. With <code>start</code> and <code>end</code>: <code>fog_distance</code>, <code>fog</code>, <code>water_fog_distance</code>. With <code>value</code>: <code>sky_fog_end</code>, <code>cloud_fog_end</code>, <code>fog_sky_end</code>, <code>fog_cloud_end</code>, <code>sun_angle</code>, <code>moon_angle</code>, <code>star_angle</code>, <code>star_brightness</code>, <code>cloud_height</code>, <code>sky_light_factor</code>, <code>rain</code>, <code>thunder</code>. Plus <code>cloud_hole {radius, ragged, at}</code>.</p>
+<h3 id="camera-and-entity">Camera and entity</h3>
+<p><code>camera</code>: <code>shake</code>, <code>shake_frequency</code>, <code>roll</code>, <code>yaw</code>, <code>pitch</code>, <code>fov_scale</code>, <code>fov</code> (expressions) and <code>offset</code> (<code>[x, y, z]</code>).
+<code>entity</code> (applies to the anchor entity): <code>outline</code> (color), <code>when</code>, <code>poses {"part": {x_rot, y_rot, z_rot, weight, mode: "add|set", visible}}</code>.</p>
+<h3 id="hud">HUD</h3>
+<p>Elements with <code>type</code>, <code>when</code>, <code>color</code>, <code>alpha</code> and canvas coordinates (<code>x</code>, <code>y</code> or <code>x0</code>, <code>y0</code>, <code>x1</code>, <code>y1</code>, <code>thickness</code>; the variables <code>W</code> and <code>H</code> give its size):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>type</code></th>
+<th>Own fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text</code></td>
+<td><code>text</code> with <code>{expression}</code> or <code>{expression:%.2f}</code>, <code>scale</code>, <code>align</code> (<code>left</code>, <code>center</code>, <code>right</code>), <code>spacing</code>, <code>halo</code>, <code>outline</code>, <code>shadow</code></td>
+</tr>
+<tr>
+<td><code>rect</code>, <code>outline</code>, <code>line</code>, <code>gradient</code> (<code>color_bottom</code>)</td>
+<td>Shapes</td>
+</tr>
+<tr>
+<td><code>corners</code> (<code>length</code>), <code>bar</code> (<code>fill</code>, <code>background</code>), <code>image</code> (<code>texture</code>)</td>
+<td>Viewfinders, bars, images</td>
+</tr>
+<tr>
+<td><code>marker</code></td>
+<td><code>at</code> (world position), <code>size</code>, <code>length</code>, <code>margin</code>, <code>text</code>, <code>scale</code>, <code>edge_arrow</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="geometry">Geometry</h3>
+<p>Elements with <code>type</code> (<code>billboard</code>, <code>beam</code>, <code>ring</code>, <code>disc</code>, <code>sphere</code>, <code>cylinder</code>), <code>render</code> (<code>additive</code>, <code>additive_texture</code>, <code>translucent</code>), <code>texture</code>, <code>at</code>, <code>to</code>, <code>color</code>, <code>color_end</code>, <code>alpha</code>, <code>size</code>, <code>rotation</code>, <code>width</code>, <code>radius</code>, <code>inner</code>, <code>segments</code>, <code>normal</code>, <code>when</code>.</p><h2 id="14-expressions">14. Expressions</h2>
+<pre><code class="language-plaintext">numbers 1, 2.5, 1e3 · constants pi, tau, e, true, false
++ - * / % ^ (power) · &lt; &lt;= &gt; &gt;= == != · &amp;&amp; || ! · c ? a : b
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Functions</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Math</td>
+<td><code>sin cos tan asin acos atan atan2 sqrt abs sign floor ceil round fract min max clamp sat mix lerp step smoothstep pow exp log log2 log10 mod hypot remap progress between if</code></td>
+</tr>
+<tr>
+<td>Envelopes</td>
+<td><code>window(t, in0, in1, out0, out1)</code>, <code>swindow</code> (soft edges), <code>decay(x, k)</code> or <code>decay(t, start, k)</code>, <code>impulse(x, attack, release)</code>, <code>spring(x, frequency, damping)</code></td>
+</tr>
+<tr>
+<td>Easing</td>
+<td><code>smooth smoother ease_in ease_out ease_in_out ease_out_back ease_out_elastic ease_out_bounce</code></td>
+</tr>
+<tr>
+<td>Rhythm</td>
+<td><code>pulse(t, start, end, f0, f1[, shape])</code> (phase of a pulse that speeds up without jumps), <code>beat(phase, sharpness)</code>, <code>wave(s, hz)</code>, <code>saw</code>, <code>tri</code>, <code>square(x[, duty])</code></td>
+</tr>
+<tr>
+<td>Seeded random</td>
+<td><code>noise(x[, channel])</code>, <code>fbm(x[, octaves])</code>, <code>rand(i)</code>, <code>randr(i, min, max)</code>, <code>hash(i[, seed])</code></td>
+</tr>
+<tr>
+<td>Physics</td>
+<td><code>arrival(distance)</code>: ticks the sound takes to arrive</td>
+</tr>
+</tbody>
+</table></div>
+<p>Variables: <code>t</code> (continuous ticks; whole numbers in actions), <code>tick</code>, <code>s</code> (seconds), <code>age</code>, <code>duration</code>, <code>speed</code>, <code>seed</code> (0–1), <code>partial</code>, <code>ox oy oz</code> (origin), <code>cx cy cz</code> (camera), <code>dist</code>, <code>stopping</code>, <code>stop_t</code>, <code>local</code>, the parameters (vectors also as <code>name_x/_y/_z/_w</code> and <code>name_0…</code>; colors as <code>name_r/_g/_b/_a</code>), <code>state</code>, <code>vars</code>, <code>W</code> and <code>H</code> in the HUD and <code>event_&lt;key&gt;</code> in events. An unknown variable is NaN and you get a warning once.</p>
+<nav class="pager" aria-label="Pages"><a class="prev" href="environment.html"><small>Previous</small>Environment, camera and entities</a><a class="next" href="tools.html"><small>Next</small>Settings and tools</a></nav>
+<footer class="foot">Blocmpact · <a href="https://github.com/julionxn/blocmpact/blob/main/LICENSE">MIT license</a> · <a href="https://github.com/julionxn/blocmpact">GitHub</a> · <a href="https://modrinth.com/mod/blocmpact">Modrinth</a></footer>
+</main>
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/glsl.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/groovy.min.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+	"required": true,
+	"package": "me.julionxn.blocmpact.client.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"CameraMixin",
+		"CloudRendererMixin",
+		"EntityRendererMixin",
+		"EnvironmentAttributeProbeMixin",
+		"FogRendererMixin",
+		"GameRendererMixin",
+		"LevelRendererMixin",
+		"LevelWeatherMixin",
+		"ModelFeatureRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

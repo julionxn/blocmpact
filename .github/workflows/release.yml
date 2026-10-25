@@ -1,0 +1,50 @@
+# Publishes a release when a tag "v<version>" is pushed (version from gradle.properties, e.g. v1.0.0+26.3):
+# uploads the jar to Modrinth and creates the GitHub release with the CHANGELOG.md section as notes.
+# Needs the repository secret MODRINTH_TOKEN (Modrinth personal access token with the "Create versions" scope).
+
+name: release
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: check that the tag matches the version
+        run: |
+          version=$(grep '^version=' gradle.properties | cut -d= -f2)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match version=$version in gradle.properties"
+            exit 1
+          fi
+          awk -v v="## $version" 'index($0, v) == 1 { on = 1; next } /^## / && on { exit } on' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "CHANGELOG.md has no '## $version' section"
+            exit 1
+          fi
+      - name: build
+        run: ./gradlew build
+      - name: publish to Modrinth
+        # Minotaur does not support the configuration cache
+        run: ./gradlew modrinth --no-configuration-cache
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+      - name: GitHub release
+        run: gh release create "$GITHUB_REF_NAME" build/libs/*.jar --title "Blocmpact ${GITHUB_REF_NAME#v}" --notes-file release-notes.md
+        env:
+          GH_TOKEN: ${{ github.token }}
